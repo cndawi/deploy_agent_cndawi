@@ -20,3 +20,33 @@ else
 fi
 echo "All pre-flight  checks passed"
 
+#Step 2: ask for the project name
+
+echo "Enter a name for the project:"
+read name
+
+#Do not allow an empty name
+if [ -z "$name" ]; then
+	echo "Error: the name cannot be empty"
+	exit 1
+fi
+
+dir="attendance_tracker_$name"
+
+#If the directory already exists ask before overwriting
+if [ -d "$dir" ]; then
+	echo "The directory $dir already exists."
+	echo "Do you want to overwite it? (y/n)"
+	read answer
+if [ "$answer" = "y" ]; then
+	rm -rf "$dir"
+else
+	echo "Aborting. The existing directory was not changed."
+	exit 1
+        fi
+fi
+
+#Create the structure
+mkdir -p "$dir/Helpers" "$dir/reports"
+echo "Created $dir with Helpers and reports"
+
