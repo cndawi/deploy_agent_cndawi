@@ -50,3 +50,33 @@ fi
 mkdir -p "$dir/Helpers" "$dir/reports"
 echo "Created $dir with Helpers and reports"
 
+#Step 3: copying files from templates
+
+cp templates/attendance_checker.py $dir/attendance_checker.py
+cp templates/config.json $dir/Helpers/config.json
+echo "Copied the files attendance_checker.py and config.json"
+
+#Ask how to build the roster
+echo "How do you want to build the roster?"
+echo "A= copy from templates"
+echo "B= generate a new roster"
+read choice
+
+echo "How many students"
+read count
+
+#Check that count is a number number that is 1 or more
+if [ "$count" -ge 1 ] 2>/dev/null; then
+	echo "Number accepted"
+else
+	echo "Error: enter a number of 1 or more"
+	exit 1
+fi
+
+if [ "$choice" = "A" ]; then
+# Option A: copy the header + count rows from the template
+lines=$((count + 1))
+head -n $lines templates/assets.csv > $dir/Helpers/assets.csv
+sessions=5
+echo "Copied $count students from the templates"
+fi
