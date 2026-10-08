@@ -161,3 +161,11 @@ else
 	exit 1
 fi
 
+# Step 6: verifying the deployment by executing the application
+
+echo "Verifying the deployment by executing the application...."
+cd $dir
+python3 attendance_checker.py
+cd ..
+
+echo "Deployment finished"
