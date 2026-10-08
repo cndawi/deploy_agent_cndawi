@@ -111,3 +111,12 @@ fi
 
 sed -i "s/\"total_sessions\": [0-9]*/\"total_sessions\": $sessions/" $dir/Helpers/config.json
 echo "total_sessions is now $sessions"
+
+# Step 4: set permissions
+
+chmod +x $dir/attendance_checker.py
+chmod 600 $dir/Helpers/config.json
+
+echo "Permissions set are:"
+ls -l $dir/attendance_checker.py
+ls -l $dir/Helpers/config.json
