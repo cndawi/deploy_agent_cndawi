@@ -79,4 +79,35 @@ lines=$((count + 1))
 head -n $lines templates/assets.csv > $dir/Helpers/assets.csv
 sessions=5
 echo "Copied $count students from the templates"
+elif [ "$choice" = "B" ]; then
+	# Option B; make a new roster with every count starting at 0
+
+	names=("Alice Johnson" "Bob Smith" "Charlie Davis" "Diana Prince" "Ethan Cole" "Fatima Noor" "George Mensah" "Hannah Kim" "Ibrahim Osei" "Jasmine Lee")
+    emails=("alice@example.com" "bob@example.com" "charlie@example.com" "diana@example.com" "ethan@example.com" "fatima@example.com" "george@example.com" "hannah@example.com" "ibrahim@example.com" "jasmine@example.com")
+
+    # First line of the file is the header
+    echo "Email,Names,Attendance Count,Absence Count" > $dir/Helpers/assets.csv
+
+    number=1
+    while [ $number -le $count ]; do
+	    position=$(( (number - 1)% 10 ))
+
+	    if [ $number -le 10 ]; then
+		    # students 1 to 10 use the names and emails exactly as listed
+                    echo "${emails[$position]},${names[$position]},0,0" >> $dir/Helpers/assets.csv
+        else
+		# after 10, repeat the names but add the number so nothing is duplicated
+		echo "student$number@example.com,${names[$position]} $number,0,0" >> $dir/Helpers/assets.csv
+        fi
+
+	number=$((number + 1))
+done
+sessions=1
+echo "Generated $count students with all counts at 0"
+else
+	echo "Error: please type A or B"
+	exit 1
 fi
+
+sed -i "s/\"total_sessions\": [0-9]*/\"total_sessions\": $sessions/" $dir/Helpers/config.json
+echo "total_sessions is now $sessions"
