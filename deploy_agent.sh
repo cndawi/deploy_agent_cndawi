@@ -120,3 +120,44 @@ chmod 600 $dir/Helpers/config.json
 echo "Permissions set are:"
 ls -l $dir/attendance_checker.py
 ls -l $dir/Helpers/config.json
+
+# Step 5: Offer to update the alert thresholds
+
+echo "Do you want to update the alert thresholds? (y/n)"
+read update
+
+if [ "$update" = "y" ] || [ "$update" = "Y" ]; then
+	echo "Enter the warning threshold (press Enter for 75):"
+	read warning
+	if [ -z "$warning" ]; then
+		warning=75
+	fi
+
+	echo "Enter the failure threshold (press Enter for 50):"
+	read failure
+	if [ -z "$failure" ]; then
+		failure=50
+	fi
+
+	# check that both are numbers
+	if ! [ "$warning" -ge 0 ] 2>/dev/null; then
+		echo "Error: warning must be a number"
+		exit 1
+	fi
+    if ! [ "$failure" -ge 0 ] 2>/dev/null; then
+		echo "Error: failure must be a number"
+		exit 1
+	fi
+
+	# change only the warning and failure lines 
+	sed -i "s/\"warning\": [0-9]*/\"warning\": $warning/" $dir/Helpers/config.json
+    sed -i "s/\"failure\": [0-9]*/\"failure\": $failure/" $dir/Helpers/config.json
+
+    echo "Thresholds updated: warning=$warning, failure=$failure"
+    elif [ "$update" = "n" ] || [ "$update" = "N" ]; then
+	echo "Keeping the default thresholds (75 and 50)"
+else
+	echo "Error: please answer y or n"
+	exit 1
+fi
+
