@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+deploy() {
 
 
 echo "Running pre-flight checks..."
@@ -9,14 +10,14 @@ if which python3 > /dev/null; then
 	echo "python3 is installed"
 else
 	echo "python3 is not installed"
-	exit 1
+	return 1
 fi
 
 if which zip > /dev/null; then
 	echo "zip is installed"
 else
 	echo "zip is not installed"
-	exit 1
+	return 1
 fi
 echo "All pre-flight  checks passed"
 
@@ -28,7 +29,7 @@ read name
 #Do not allow an empty name
 if [ -z "$name" ]; then
 	echo "Error: the name cannot be empty"
-	exit 1
+	return 1
 fi
 
 dir="attendance_tracker_$name"
@@ -42,7 +43,7 @@ if [ "$answer" = "y" ]; then
 	rm -rf "$dir"
 else
 	echo "Aborting. The existing directory was not changed."
-	exit 1
+	return 1
         fi
 fi
 
@@ -70,7 +71,7 @@ if [ "$count" -ge 1 ] 2>/dev/null; then
 	echo "Number accepted"
 else
 	echo "Error: enter a number of 1 or more"
-	exit 1
+	return 1
 fi
 
 if [ "$choice" = "A" ]; then
@@ -106,7 +107,7 @@ sessions=1
 echo "Generated $count students with all counts at 0"
 else
 	echo "Error: please type A or B"
-	exit 1
+	return 1
 fi
 
 sed -i "s/\"total_sessions\": [0-9]*/\"total_sessions\": $sessions/" $dir/Helpers/config.json
@@ -142,11 +143,11 @@ if [ "$update" = "y" ] || [ "$update" = "Y" ]; then
 	# check that both are numbers
 	if ! [ "$warning" -ge 0 ] 2>/dev/null; then
 		echo "Error: warning must be a number"
-		exit 1
+		return 1
 	fi
     if ! [ "$failure" -ge 0 ] 2>/dev/null; then
 		echo "Error: failure must be a number"
-		exit 1
+		return 1
 	fi
 
 	# change only the warning and failure lines 
@@ -158,7 +159,7 @@ if [ "$update" = "y" ] || [ "$update" = "Y" ]; then
 	echo "Keeping the default thresholds (75 and 50)"
 else
 	echo "Error: please answer y or n"
-	exit 1
+	return 1
 fi
 
 # Step 6: verifying the deployment by executing the application
@@ -169,3 +170,31 @@ python3 attendance_checker.py
 cd ..
 
 echo "Deployment finished"
+}
+
+# Menu
+
+while true; do
+	echo ""
+	echo "==== Attendance Tracker ===="
+	echo "1) Deploy the Application"
+	echo "2) Run the Application"
+	echo "3) Archive the log files"
+	echo "4) Quit"
+	echo "Choose an option:"
+	read option
+
+	if [ "$option" = "1" ]; then
+		deploy
+	elif [ "$option" = "2" ]; then
+		echo " Run is not yet available"
+	elif [ "$option" = "3" ]; then
+		echo "Archive is not yet available"
+	elif [ "$option" = "4" ]; then
+		echo "Exiting"
+		exit 0
+	else
+		echo "Error: please choose 1,2,3 or 4"
+	fi
+done
+
