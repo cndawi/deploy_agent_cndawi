@@ -172,6 +172,33 @@ cd ..
 echo "Deployment finished"
 }
 
+run_app() {
+	echo "Enter the project name:"
+	read name
+	
+	if [ -z "$name" ]; then
+		echo "Error: the name cannot be empty"
+		return 1
+	fi
+
+	dir="attendance_tracker_$name"
+
+	if [ ! -d "$dir" ]; then
+		echo "Error: $dir does not exist. Deploy it first."
+		return 1
+	fi
+
+	if [ ! -f "$dir/attendance_checker.py" ]; then
+		echo "Error: attendance_checker.py is missing in $dir"
+		return 1
+	fi
+
+	cd "$dir" || return 1
+	python3 attendance_checker.py
+	cd ..
+}
+
+
 # Menu
 
 while true; do
@@ -187,7 +214,7 @@ while true; do
 	if [ "$option" = "1" ]; then
 		deploy
 	elif [ "$option" = "2" ]; then
-		echo " Run is not yet available"
+        run_app
 	elif [ "$option" = "3" ]; then
 		echo "Archive is not yet available"
 	elif [ "$option" = "4" ]; then
