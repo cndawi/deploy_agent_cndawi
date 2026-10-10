@@ -199,6 +199,48 @@ run_app() {
 }
 
 
+archive_logs() {
+	echo "Enter the project name:"
+	read name
+
+	if [ -z "$name" ]; then
+		echo "Error: the name cannot be empty"
+		return 1
+	fi
+
+	dir="attendance_tracker_$name"
+
+	if [ ! -d "$dir" ]; then
+		echo "Error: $dir does not exist"
+		return 1
+	fi
+
+	# the timestamp, for example 20261010_030512
+	timestamp=$(date +%Y%m%d_%H%M%S)
+
+	# archive attendance.log
+    if [ -f "$dir/reports/attendance.log" ]; then
+		mkdir -p "$dir/archives/attendance"
+	        if mv "$dir/reports/attendance.log" "$dir/archives/attendance/attendance_$timestamp.log"; then
+		echo "Archived: $dir/archives/attendance/attendance_$timestamp.log"
+	else
+		echo "Error: could not archive attendance.log"
+	fi
+else
+	echo "No attendance.log found, skipping"
+fi
+	# archive absent.log
+	if [ -f "$dir/reports/absent.log" ]; then
+		mkdir -p "$dir/archives/absent"
+	        if mv "$dir/reports/absent.log" "$dir/archives/absent/absent_$timestamp.log"; then
+		echo "Archived: $dir/archives/absent/absent_$timestamp.log"
+	else
+		echo "Error: could not archive absent.log"
+	fi
+	else
+		echo "No absent.log found, skipping"
+	fi
+}
 # Menu
 
 while true; do
@@ -216,7 +258,7 @@ while true; do
 	elif [ "$option" = "2" ]; then
         run_app
 	elif [ "$option" = "3" ]; then
-		echo "Archive is not yet available"
+        archive_logs
 	elif [ "$option" = "4" ]; then
 		echo "Exiting"
 		exit 0
