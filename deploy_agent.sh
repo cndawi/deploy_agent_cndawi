@@ -24,24 +24,27 @@ deploy() {
     trap cleanup SIGINT SIGTSTP
 
 
-echo "Running pre-flight checks..."
+    missing=0
 
-#Check that python3 and zip are installed
+    if command -v python3 > /dev/null; then
+	    echo "python is installed $(python3 --version)"
+    else
+	    echo "python is not installed"
+	    missing=1
+    fi
 
-if which python3 > /dev/null; then
-	echo "python3 is installed"
-else
-	echo "python3 is not installed"
-	return 1
-fi
+    if command -v zip >/dev/null; then
+	    echo "zip is installed $(zip -v | head -n 2 | tail -n 1)"
+    else
+	    echo "zip is not installed"
+	    missing=1
+    fi
 
-if which zip > /dev/null; then
-	echo "zip is installed"
-else
-	echo "zip is not installed"
-	return 1
-fi
-echo "All pre-flight  checks passed"
+    if [ "$missing" = "1" ]; then
+	    echo "Pre-flight checks failed. Please install the missing tools."
+	    return 1
+    fi
+    echo "All pre-flight checks passed"
 
 #Step 2: ask for the project name
 
