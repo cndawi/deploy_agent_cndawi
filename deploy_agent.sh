@@ -1,5 +1,27 @@
 #!/usr/bin/env bash
+PROJECT_DIR=""
+
+# runs when the user presses Ctrl+C or Ctrl+Z during deploy
+cleanup() {
+	echo ""
+	echo "Deployment was interrupted"
+
+	if [ -d "$PROJECT_DIR" ]; then
+		echo "Zipping the incomplete project..."
+		zip -r "$PROJECT_DIR"_archive.zip "$PROJECT_DIR" > /dev/null
+		rm -rf "$PROJECT_DIR"
+		echo "Created $PROJECT_DIR"_archive.zip
+		echo "Deleted the incomplete folder"
+	else
+		echo "no folder was created yet"
+	fi
+
+	echo "Closing Session"
+	exit 130
+}
+
 deploy() {
+    trap cleanup SIGINT SIGTSTP
 
 
 echo "Running pre-flight checks..."
@@ -50,6 +72,7 @@ fi
 #Create the structure
 mkdir -p "$dir/Helpers" "$dir/reports"
 echo "Created $dir with Helpers and reports"
+    PROJECT_DIR="$dir"
 
 #Step 3: copying files from templates
 
@@ -162,6 +185,8 @@ else
 	return 1
 fi
 
+    PROJECT_DIR=""
+    trap - SIGINT SIGTSTP
 # Step 6: verifying the deployment by executing the application
 
 echo "Verifying the deployment by executing the application...."
@@ -255,6 +280,8 @@ while true; do
 
 	if [ "$option" = "1" ]; then
 		deploy
+        trap - SIGINT SIGTSTP
+        PROJECT_DIR=""
 	elif [ "$option" = "2" ]; then
         run_app
 	elif [ "$option" = "3" ]; then
