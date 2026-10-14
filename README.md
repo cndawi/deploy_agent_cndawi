@@ -246,4 +246,4 @@ bash -n deploy_agent.sh
 
 ## Video walkthrough
 
-<paste video link here>
+[Video Link] [https://youtu.be/CyO0HzoZcSE]
